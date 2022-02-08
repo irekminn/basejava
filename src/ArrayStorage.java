@@ -21,9 +21,6 @@ public class ArrayStorage {
   }
 
   void save(Resume r) {
-    if (size == 0) {
-      return;
-    }
     var checkRepeat = Arrays.stream(storage, 0, size)
         .anyMatch(resume -> resume.uuid.equals(r.uuid));
     if (checkRepeat) {
