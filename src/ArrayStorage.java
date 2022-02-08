@@ -1,30 +1,75 @@
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    Resume[] storage = new Resume[10000];
 
-    void clear() {
+  Resume[] storage = new Resume[10000];
+
+  void clear() {
+    for (int i = 0; i < storage.length; i++) {
+      if (storage[i] == null) {
+        break;
+      }
+      storage[i] = null;
+    }
+  }
+
+  void save(Resume r) {
+    var countResume =  (int) Arrays.stream(storage)
+        .takeWhile(Objects::nonNull)
+        .count();
+    if (countResume < storage.length) {
+      storage[countResume] = r;
+    } else {
+      var newStorage = new Resume[storage.length + 1];
+      newStorage = Arrays.copyOf(storage, storage.length);
+      newStorage[newStorage.length - 1] = r;
+      storage = newStorage;
     }
 
-    void save(Resume r) {
-    }
+  }
 
-    Resume get(String uuid) {
-        return null;
-    }
+  Resume get(String uuid) {
+    return Arrays.stream(storage)
+        .filter(resume -> resume != null && resume.uuid.equals(uuid))
+        .findFirst().orElse(new Resume());
+  }
 
-    void delete(String uuid) {
-    }
+  void delete(String uuid) {
+    var index = (int) Arrays.stream(storage)
+        .takeWhile(resume -> !resume.uuid.equals(uuid))
+        .count();
 
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    Resume[] getAll() {
-        return new Resume[0];
-    }
+    if (storage[index + 1] == null) {
+      storage[index] = null;
+    } else {
+      var fistPartArray = new Resume[index + 1];
+      var secondPartArray = new Resume[storage.length - (index + 1)];
+      var newStorage = new Resume[storage.length - 1];
 
-    int size() {
-        return 0;
+      System.arraycopy(storage, 0, fistPartArray, 0, index + 1);
+      System.arraycopy(storage, index + 1, secondPartArray, 0, secondPartArray.length);
+      System.arraycopy(fistPartArray, 0, newStorage, 0, fistPartArray.length);
+      System.arraycopy(secondPartArray, 0, newStorage, fistPartArray.length - 1, secondPartArray.length);
+      storage = newStorage;
     }
+  }
+
+  /**
+   * @return array, contains only Resumes in storage (without null)
+   */
+  Resume[] getAll() {
+    return Arrays.stream(storage)
+        .takeWhile(Objects::nonNull)
+        .toArray(Resume[]::new);
+  }
+
+  int size() {
+    return (int) Arrays.stream(storage)
+        .takeWhile(Objects::nonNull)
+        .count();
+  }
 }
