@@ -1,8 +1,7 @@
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.IntStream;
 
-/**
+/*
  * Array based storage for Resumes
  */
 public class ArrayStorage {
@@ -22,32 +21,38 @@ public class ArrayStorage {
   }
 
   void save(Resume r) {
-    var countResume = (int) Arrays.stream(storage)
-        .takeWhile(Objects::nonNull)
-        .count();
-    var dublicate = IntStream.range(0, countResume)
-        .mapToObj(i -> storage[i])
-        .anyMatch(resume -> resume.uuid.equals(r.uuid));
-    if (!dublicate) {
-      if (countResume < storage.length) {
-        storage[countResume] = r;
-      } else {
-        var newStorage = new Resume[storage.length + 1];
-        newStorage = Arrays.copyOf(storage, storage.length);
-        newStorage[newStorage.length - 1] = r;
-        storage = newStorage;
-      }
-      size++;
+    if (size == 0) {
+      return;
     }
+    var checkRepeat = Arrays.stream(storage, 0, size)
+        .anyMatch(resume -> resume.uuid.equals(r.uuid));
+    if (checkRepeat) {
+      return;
+    }
+    if (size < storage.length) {
+      storage[size] = r;
+    } else {
+      var newStorage = new Resume[storage.length + 1];
+      newStorage = Arrays.copyOf(storage, storage.length);
+      newStorage[newStorage.length - 1] = r;
+      storage = newStorage;
+    }
+    size++;
   }
 
   Resume get(String uuid) {
+    if (size == 0) {
+      return null;
+    }
     return Arrays.stream(storage)
         .filter(resume -> resume != null && resume.uuid.equals(uuid))
         .findFirst().orElse(null);
   }
 
   void delete(String uuid) {
+    if (size == 0) {
+      return;
+    }
     var index = (int) Arrays.stream(storage)
         .takeWhile(resume -> !resume.uuid.equals(uuid))
         .count();
@@ -69,7 +74,7 @@ public class ArrayStorage {
     size--;
   }
 
-  /**
+  /*
    * @return array, contains only Resumes in storage (without null)
    */
   Resume[] getAll() {
