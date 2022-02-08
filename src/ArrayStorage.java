@@ -75,6 +75,9 @@ public class ArrayStorage {
    * @return array, contains only Resumes in storage (without null)
    */
   Resume[] getAll() {
+    if (size == 0) {
+      return null;
+    }
     return Arrays.stream(storage)
         .takeWhile(Objects::nonNull)
         .toArray(Resume[]::new);
