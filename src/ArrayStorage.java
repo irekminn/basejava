@@ -1,12 +1,15 @@
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.stream.IntStream;
 
 /**
  * Array based storage for Resumes
  */
 public class ArrayStorage {
 
+  int size = 0;
   Resume[] storage = new Resume[10000];
+
 
   void clear() {
     for (int i = 0; i < storage.length; i++) {
@@ -14,28 +17,34 @@ public class ArrayStorage {
         break;
       }
       storage[i] = null;
+      size = 0;
     }
   }
 
   void save(Resume r) {
-    var countResume =  (int) Arrays.stream(storage)
+    var countResume = (int) Arrays.stream(storage)
         .takeWhile(Objects::nonNull)
         .count();
-    if (countResume < storage.length) {
-      storage[countResume] = r;
-    } else {
-      var newStorage = new Resume[storage.length + 1];
-      newStorage = Arrays.copyOf(storage, storage.length);
-      newStorage[newStorage.length - 1] = r;
-      storage = newStorage;
+    var dublicate = IntStream.range(0, countResume)
+        .mapToObj(i -> storage[i])
+        .anyMatch(resume -> resume.uuid.equals(r.uuid));
+    if (!dublicate) {
+      if (countResume < storage.length) {
+        storage[countResume] = r;
+      } else {
+        var newStorage = new Resume[storage.length + 1];
+        newStorage = Arrays.copyOf(storage, storage.length);
+        newStorage[newStorage.length - 1] = r;
+        storage = newStorage;
+      }
+      size++;
     }
-
   }
 
   Resume get(String uuid) {
     return Arrays.stream(storage)
         .filter(resume -> resume != null && resume.uuid.equals(uuid))
-        .findFirst().orElse(new Resume());
+        .findFirst().orElse(null);
   }
 
   void delete(String uuid) {
@@ -53,9 +62,11 @@ public class ArrayStorage {
       System.arraycopy(storage, 0, fistPartArray, 0, index + 1);
       System.arraycopy(storage, index + 1, secondPartArray, 0, secondPartArray.length);
       System.arraycopy(fistPartArray, 0, newStorage, 0, fistPartArray.length);
-      System.arraycopy(secondPartArray, 0, newStorage, fistPartArray.length - 1, secondPartArray.length);
+      System.arraycopy(secondPartArray, 0, newStorage, fistPartArray.length - 1,
+          secondPartArray.length);
       storage = newStorage;
     }
+    size--;
   }
 
   /**
@@ -68,8 +79,6 @@ public class ArrayStorage {
   }
 
   int size() {
-    return (int) Arrays.stream(storage)
-        .takeWhile(Objects::nonNull)
-        .count();
+    return size;
   }
 }
