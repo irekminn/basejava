@@ -19,7 +19,7 @@ public class ArrayStorage {
     size = 0;
   }
 
-  void save(Resume r) {
+  void save(final Resume r) {
     if (size == 0) {
       storage[0] = r;
       size++;
@@ -39,7 +39,7 @@ public class ArrayStorage {
     size++;
   }
 
-  Resume get(String uuid) {
+  Resume get(final String uuid) {
     if (size == 0) {
       return null;
     }
@@ -48,7 +48,7 @@ public class ArrayStorage {
         .findFirst().orElse(null);
   }
 
-  void delete(String uuid) {
+  void delete(final String uuid) {
     if (size == 0) {
       return;
     }
