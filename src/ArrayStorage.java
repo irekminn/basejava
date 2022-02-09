@@ -1,5 +1,5 @@
 import java.util.Arrays;
-import java.util.Objects;
+import java.util.stream.IntStream;
 
 /*
  * Array based storage for Resumes
@@ -11,28 +11,30 @@ public class ArrayStorage {
 
 
   void clear() {
-    for (int i = 0; i < storage.length; i++) {
-      if (storage[i] == null) {
-        break;
-      }
-      storage[i] = null;
-      size = 0;
+    if (size == 0) {
+      return;
     }
+    IntStream.range(0, size)
+        .forEach(i -> storage[i] = null);
+    size = 0;
   }
 
   void save(Resume r) {
-    var checkRepeat = Arrays.stream(storage, 0, size)
-        .anyMatch(resume -> resume.uuid.equals(r.uuid));
-    if (checkRepeat) {
+    if (size == 0) {
+      storage[0] = r;
+      size++;
       return;
     }
+
+    var checkDuplicate = Arrays.stream(storage, 0, size)
+        .anyMatch(resume -> resume.uuid.equals(r.uuid));
+
+    if (checkDuplicate) {  //uuid duplicate, nothing, return
+      return;
+    }
+
     if (size < storage.length) {
       storage[size] = r;
-    } else {
-      var newStorage = new Resume[storage.length + 1];
-      newStorage = Arrays.copyOf(storage, storage.length);
-      newStorage[newStorage.length - 1] = r;
-      storage = newStorage;
     }
     size++;
   }
@@ -41,8 +43,8 @@ public class ArrayStorage {
     if (size == 0) {
       return null;
     }
-    return Arrays.stream(storage)
-        .filter(resume -> resume != null && resume.uuid.equals(uuid))
+    return Arrays.stream(storage, 0, size)
+        .filter(resume -> resume.uuid.equals(uuid))
         .findFirst().orElse(null);
   }
 
@@ -50,23 +52,21 @@ public class ArrayStorage {
     if (size == 0) {
       return;
     }
-    var index = (int) Arrays.stream(storage)
+
+    if (Arrays.stream(storage, 0, size)  // not found uuid, nothing, return
+        .noneMatch(resume -> resume.uuid.equals(uuid))) {
+      return;
+    }
+
+    var index = (int) Arrays.stream(storage, 0, size)
         .takeWhile(resume -> !resume.uuid.equals(uuid))
         .count();
 
     if (storage[index + 1] == null) {
       storage[index] = null;
     } else {
-      var fistPartArray = new Resume[index + 1];
-      var secondPartArray = new Resume[storage.length - (index + 1)];
-      var newStorage = new Resume[storage.length - 1];
-
-      System.arraycopy(storage, 0, fistPartArray, 0, index + 1);
-      System.arraycopy(storage, index + 1, secondPartArray, 0, secondPartArray.length);
-      System.arraycopy(fistPartArray, 0, newStorage, 0, fistPartArray.length);
-      System.arraycopy(secondPartArray, 0, newStorage, fistPartArray.length - 1,
-          secondPartArray.length);
-      storage = newStorage;
+      storage[index] = storage[size - 1];
+      storage[size - 1] = null;
     }
     size--;
   }
@@ -76,11 +76,9 @@ public class ArrayStorage {
    */
   Resume[] getAll() {
     if (size == 0) {
-      return null;
+      return new Resume[0];
     }
-    return Arrays.stream(storage)
-        .takeWhile(Objects::nonNull)
-        .toArray(Resume[]::new);
+    return Arrays.stream(storage, 0, size).toArray(Resume[]::new);
   }
 
   int size() {
