@@ -6,8 +6,8 @@ import java.util.stream.IntStream;
  */
 public class ArrayStorage {
 
-  int size = 0;
-  Resume[] storage = new Resume[10000];
+  private int size = 0;
+  private final Resume[] storage = new Resume[10000];
 
 
   void clear() {
