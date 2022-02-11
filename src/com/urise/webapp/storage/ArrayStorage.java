@@ -97,14 +97,13 @@ public class ArrayStorage {
     return size;
   }
 
-  public void update(Resume r, String uuid) {
+  public void update(Resume r) {
     if (!isResume(r)) {
       printErrorMessage(r);
       return;
     }
-    Arrays.stream(storage, 0, size)
-        .filter(resume -> r.getUuid().equals(resume.getUuid()))
-        .forEach(resume -> r.setUuid(uuid));
+    delete(r.getUuid());
+    save(r);
   }
 
   private void printErrorMessage(Resume r) {
