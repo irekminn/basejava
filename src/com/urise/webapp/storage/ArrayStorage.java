@@ -22,6 +22,11 @@ public class ArrayStorage {
   }
 
   public void save(final Resume r) {
+    if (r == null) {
+      System.out.println("Resume for update isNull");
+      return;
+    }
+
     if (size == 0) {
       storage[0] = r;
       size++;
@@ -50,7 +55,7 @@ public class ArrayStorage {
       return null;
     }
 
-    if (isResume(uuid)) {
+    if (isUuid(uuid)) {
       printErrorMessage(uuid);
       return null;
     }
@@ -65,7 +70,7 @@ public class ArrayStorage {
       return;
     }
 
-    if (isResume(uuid)) {
+    if (isUuid(uuid)) {
       printErrorMessage(uuid);
       return;
     }
@@ -98,28 +103,23 @@ public class ArrayStorage {
   }
 
   public void update(Resume r) {
-    if (!isResume(r)) {
-      printErrorMessage(r);
+    if (r == null) {
+      System.out.println("Resume for update isNull");
+      return;
+    }
+    if (isUuid(r.getUuid())) {
+      printErrorMessage(r.getUuid());
       return;
     }
     delete(r.getUuid());
     save(r);
   }
 
-  private void printErrorMessage(Resume r) {
-    System.out.println("Resume with uuid: " + r.getUuid() + " not found in storage");
-  }
-
   private void printErrorMessage(String uuid) {
     System.out.println("Resume with uuid: " + uuid + " not found in storage");
   }
 
-  private boolean isResume(Resume r) {
-    return Arrays.stream(storage, 0, size)
-        .anyMatch(resume -> resume.getUuid().equals(r.getUuid()));
-  }
-
-  private boolean isResume(String uuid) {
+  private boolean isUuid(String uuid) {
     return Arrays.stream(storage, 0, size)
         .noneMatch(resume -> resume.getUuid().equals(uuid));
   }
