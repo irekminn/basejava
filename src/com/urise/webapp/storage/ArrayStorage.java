@@ -23,7 +23,7 @@ public class ArrayStorage {
 
   public void save(final Resume r) {
     if (r == null) {
-      System.out.println("Resume for update isNull");
+      System.out.println("Resume for save isNull");
       return;
     }
 
@@ -33,10 +33,7 @@ public class ArrayStorage {
       return;
     }
 
-    var checkDuplicate = Arrays.stream(storage, 0, size)
-        .anyMatch(resume -> resume.getUuid().equals(r.getUuid()));
-
-    if (checkDuplicate) {  //uuid duplicate, nothing, return
+    if (getIndex(r.getUuid()) != -1) {
       System.out.println("Duplicate resume! Resume uuid: " + r.getUuid() + " already exists");
       return;
     }
@@ -55,14 +52,13 @@ public class ArrayStorage {
       return null;
     }
 
-    if (isUuid(uuid)) {
+    var index = getIndex(uuid);
+    if (index == -1) {
       printErrorMessage(uuid);
       return null;
     }
 
-    return Arrays.stream(storage, 0, size)
-        .filter(resume -> resume.getUuid().equals(uuid))
-        .findFirst().orElse(null);
+    return storage[index];
   }
 
   public void delete(final String uuid) {
@@ -70,14 +66,11 @@ public class ArrayStorage {
       return;
     }
 
-    if (isUuid(uuid)) {
+    var index = getIndex(uuid);
+    if (index == -1) {
       printErrorMessage(uuid);
       return;
     }
-
-    var index = (int) Arrays.stream(storage, 0, size)
-        .takeWhile(resume -> !resume.getUuid().equals(uuid))
-        .count();
 
     if (storage[index + 1] == null) {
       storage[index] = null;
@@ -107,21 +100,24 @@ public class ArrayStorage {
       System.out.println("Resume for update isNull");
       return;
     }
-    if (isUuid(r.getUuid())) {
+    var index = getIndex(r.getUuid());
+    if (index == -1) {
       printErrorMessage(r.getUuid());
       return;
     }
-    delete(r.getUuid());
-    save(r);
+    storage[index] = r;
   }
 
   private void printErrorMessage(String uuid) {
     System.out.println("Resume with uuid: " + uuid + " not found in storage");
   }
 
-  private boolean isUuid(String uuid) {
-    return Arrays.stream(storage, 0, size)
-        .noneMatch(resume -> resume.getUuid().equals(uuid));
+  private int getIndex(String uuid) {
+    for (int i = 0; i < size; i++) {
+      if (storage[i].getUuid().equals(uuid)) {
+        return i;
+      }
+    }
+    return -1;
   }
-
 }
