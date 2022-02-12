@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 /*
  * Array based storage for Resumes
  */
-public class ArrayStorage {
+public class ArrayStorage implements Storage {
 
   private static final int STORAGE_LIMIT = 10000;
   private int size = 0;
@@ -96,7 +96,7 @@ public class ArrayStorage {
     return size;
   }
 
-  public void update(Resume r) {
+  public void update(final Resume r) {
     if (r == null) {
       System.out.println("Resume for update isNull");
       return;
@@ -109,11 +109,11 @@ public class ArrayStorage {
     storage[index] = r;
   }
 
-  private void printErrorMessage(String uuid) {
+  private void printErrorMessage(final String uuid) {
     System.out.println("Resume with uuid: " + uuid + " not found in storage");
   }
 
-  private int getIndex(String uuid) {
+  private int getIndex(final String uuid) {
     for (int i = 0; i < size; i++) {
       if (storage[i].getUuid().equals(uuid)) {
         return i;
