@@ -7,11 +7,7 @@ import java.util.stream.IntStream;
 /*
  * Array based storage for Resumes
  */
-public class ArrayStorage implements Storage {
-
-  private static final int STORAGE_LIMIT = 10000;
-  private int size = 0;
-  private final Resume[] storage = new Resume[STORAGE_LIMIT];
+public class ArrayStorage extends AbstractArrayStorage {
 
 
   public void clear() {
@@ -90,10 +86,6 @@ public class ArrayStorage implements Storage {
       return new Resume[0];
     }
     return Arrays.stream(storage, 0, size).toArray(Resume[]::new);
-  }
-
-  public int size() {
-    return size;
   }
 
   public void update(final Resume r) {
