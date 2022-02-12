@@ -9,8 +9,9 @@ import java.util.stream.IntStream;
  */
 public class ArrayStorage {
 
+  private static final int STORAGE_LIMIT = 10000;
   private int size = 0;
-  private final Resume[] storage = new Resume[10000];
+  private final Resume[] storage = new Resume[STORAGE_LIMIT];
 
 
   public void clear() {
