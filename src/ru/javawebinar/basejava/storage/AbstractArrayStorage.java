@@ -1,14 +1,13 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.model.Resume;
-
-
 import java.util.Arrays;
+import ru.javawebinar.basejava.model.Resume;
 
 /**
  * Array based ru.javawebinar.basejava.storage for Resumes
  */
 public abstract class AbstractArrayStorage implements Storage {
+
   protected static final int STORAGE_LIMIT = 10000;
 
   protected Resume[] storage = new Resume[STORAGE_LIMIT];
@@ -32,7 +31,7 @@ public abstract class AbstractArrayStorage implements Storage {
     }
   }
 
-  /**
+  /*
    * @return array, contains only Resumes in ru.javawebinar.basejava.storage (without null)
    */
   public Resume[] getAll() {
