@@ -7,6 +7,13 @@ import ru.javawebinar.basejava.model.Resume;
  */
 public class ArrayStorage extends AbstractArrayStorage {
 
+  public ArrayStorage() {
+  }
+
+  public ArrayStorage(int storageLimit) {
+    super(storageLimit);
+  }
+
   @Override
   protected void fillDeletedElement(int index) {
     storage[index] = storage[size - 1];

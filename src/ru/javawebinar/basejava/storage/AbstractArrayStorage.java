@@ -11,10 +11,21 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public abstract class AbstractArrayStorage implements Storage {
-  protected static final int STORAGE_LIMIT = 10000;
 
-  protected Resume[] storage = new Resume[STORAGE_LIMIT];
+  protected int capacity = 10000;
+  protected Resume[] storage = new Resume[10000];
   protected int size = 0;
+
+  public AbstractArrayStorage() {
+  }
+
+  public AbstractArrayStorage(final int capacity) {
+
+    if (capacity > 0) {
+      this.capacity = capacity;
+      this.storage = new Resume[capacity];
+    }
+  }
 
   public int size() {
     return size;
@@ -45,7 +56,7 @@ public abstract class AbstractArrayStorage implements Storage {
     int index = getIndex(r.getUuid());
     if (index >= 0) {
       throw new ExistStorageException(r.getUuid());
-    } else if (size == STORAGE_LIMIT) {
+    } else if (size == capacity) {
       throw new StorageException("Storage overflow", r.getUuid());
     } else {
       insertElement(r, index);
@@ -70,6 +81,10 @@ public abstract class AbstractArrayStorage implements Storage {
       throw new NotExistStorageException(uuid);
     }
     return storage[index];
+  }
+
+  public int capacity() {
+    return capacity;
   }
 
   protected abstract void fillDeletedElement(int index);

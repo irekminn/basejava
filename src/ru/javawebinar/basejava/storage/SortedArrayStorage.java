@@ -1,10 +1,16 @@
 package ru.javawebinar.basejava.storage;
 
+import java.util.Arrays;
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Arrays;
-
 public class SortedArrayStorage extends AbstractArrayStorage {
+
+  public SortedArrayStorage() {
+  }
+
+  public SortedArrayStorage(int storageLimit) {
+    super(storageLimit);
+  }
 
   @Override
   protected void fillDeletedElement(int index) {

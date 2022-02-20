@@ -1,5 +1,7 @@
 package ru.javawebinar.basejava;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.lang.reflect.Field;
@@ -14,6 +16,16 @@ public class MainReflection {
     System.out.println(field.get(r));
     field.set(r, "new_uuid");
     // TODO : invoke r.toString via reflection
+    var arrayMethods = r.getClass().getMethods();
+    for (Method method : arrayMethods) {
+      if ("toString".equals(method.getName())) {
+        try {
+          System.out.println(method.invoke(r));
+        } catch (InvocationTargetException e) {
+          e.printStackTrace();
+        }
+      }
+    }
     System.out.println(r);
   }
 }
