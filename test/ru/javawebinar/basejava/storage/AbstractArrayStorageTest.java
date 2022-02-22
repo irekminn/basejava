@@ -12,7 +12,6 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractArrayStorageTest {
-
   private Storage storage;
 
   private static final String UUID_1 = "uuid1";
@@ -86,7 +85,7 @@ public abstract class AbstractArrayStorageTest {
   @Test(expected = StorageException.class)
   public void saveOverflow() throws Exception {
     try {
-      for (int i = 4; i <= AbstractArrayStorage.STORAGE_LIMIT; i++) {
+      for (int i = 4; i <= AbstractArrayStorage.STORAGE_LIMIT+1; i++) {
         storage.save(new Resume());
       }
     } catch (StorageException e) {
