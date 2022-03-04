@@ -44,7 +44,7 @@ public abstract class AbstractStorageTest {
 
   @Test
   public void size() throws Exception {
-    assertSize(doSize());
+    assertSize(3);
   }
 
   @Test

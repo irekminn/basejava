@@ -1,10 +1,10 @@
 package ru.javawebinar.basejava.storage;
 
 import java.util.List;
-import java.util.Optional;
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public class ListStorage extends AbstractStorage {
+public class ListStorage extends AbstractStorage<Integer> {
 
   protected List<Resume> storage;
 
@@ -19,23 +19,32 @@ public class ListStorage extends AbstractStorage {
   }
 
   @Override
-  protected Resume doGet(int index) {
-    return storage.get(index);
+  protected Resume doGet(String uuid) {
+    var key = getKey(uuid);
+    return storage.get(key);
   }
 
   @Override
-  protected void doDelete(int index) {
-    storage.remove(index);
+  protected void doDelete(Integer key) {
+    storage.remove(key);
   }
 
   @Override
-  protected void doSave(Resume r, int index) {
+  protected void doSave(Resume r) {
+    if (getKey(r.getUuid()) != null) {
+      throw new ExistStorageException(r.getUuid());
+    }
     storage.add(r);
   }
 
   @Override
-  protected void doUpdate(Resume r, int index) {
-    storage.set(index, r);
+  protected Integer getKey(String uuid) {
+    return storage.indexOf(uuid);
+  }
+
+  @Override
+  protected void doUpdate(Resume r, Integer key) {
+    storage.set(key, r);
   }
 
   @Override
@@ -43,10 +52,4 @@ public class ListStorage extends AbstractStorage {
     return storage.toArray(Resume[]::new);
   }
 
-  protected int getIndex(String uuid) {
-    return Optional.of((int) storage.stream()
-            .takeWhile(resume -> !resume.getUuid().equals(uuid))
-            .count())
-        .orElse(-1);
-  }
 }

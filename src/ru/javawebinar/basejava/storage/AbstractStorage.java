@@ -1,10 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public abstract class AbstractStorage implements Storage {
+public abstract class AbstractStorage<T> implements Storage {
 
   @Override
   public int size() {
@@ -20,38 +19,34 @@ public abstract class AbstractStorage implements Storage {
 
   @Override
   public void update(Resume r) {
-    int index = getIndex(r.getUuid());
-    if (index < 0) {
+    var key = getKey(r.getUuid());
+    if (key == null) {
       throw new NotExistStorageException(r.getUuid());
     }
-    doUpdate(r, index);
+    doUpdate(r, key);
   }
 
   @Override
   public void save(Resume r) {
-    int index = getIndex(r.getUuid());
-    if (index >= 0) {
-      throw new ExistStorageException(r.getUuid());
-    }
-    doSave(r, index);
+    doSave(r);
   }
 
   @Override
   public void delete(String uuid) {
-    int index = getIndex(uuid);
-    if (index < 0) {
+    var key = getKey(uuid);
+    if (key == null) {
       throw new NotExistStorageException(uuid);
     }
-    doDelete(index);
+    doDelete(key);
   }
 
   @Override
   public Resume get(String uuid) {
-    int index = getIndex(uuid);
-    if (index < 0) {
+    var key = getKey(uuid);
+    if (key == null) {
       throw new NotExistStorageException(uuid);
     }
-    return doGet(index);
+    return doGet(uuid);
   }
 
   @Override
@@ -63,15 +58,15 @@ public abstract class AbstractStorage implements Storage {
 
   protected abstract void doClear();
 
-  protected abstract Resume doGet(int index);
+  protected abstract Resume doGet(String uuid);
 
   protected abstract Resume[] doGetAll();
 
-  protected abstract void doDelete(int index);
+  protected abstract void doDelete(T key);
 
-  protected abstract void doSave(Resume r, int index);
+  protected abstract void doSave(Resume r);
 
-  protected abstract int getIndex(String uuid);
+  protected abstract T getKey(String uuid);
 
-  protected abstract void doUpdate(Resume r, int index);
+  protected abstract void doUpdate(Resume r, T key);
 }
