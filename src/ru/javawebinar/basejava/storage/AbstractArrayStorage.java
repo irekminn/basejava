@@ -43,10 +43,10 @@ public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
     if (size == STORAGE_LIMIT) {
       throw new StorageException("Storage overflow", r.getUuid());
     }
-    if (getIndex(r.getUuid()) != -1) {
+    if (getKey(r.getUuid()) != null) {
       throw new ExistStorageException(r.getUuid());
     }
-    insertElement(r, doSize());
+    insertElement(r, getIndex(r.getUuid()));
     size++;
   }
 
