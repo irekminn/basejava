@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -28,6 +29,9 @@ public abstract class AbstractStorage<T> implements Storage {
 
   @Override
   public void save(Resume r) {
+    if (getKey(r.getUuid()) != null) {
+      throw new ExistStorageException(r.getUuid());
+    }
     doSave(r);
   }
 
@@ -46,7 +50,11 @@ public abstract class AbstractStorage<T> implements Storage {
     if (key == null) {
       throw new NotExistStorageException(uuid);
     }
-    return doGet(uuid);
+    return doGet(key);
+  }
+
+  protected T getKey(String uuid) {
+    return  getIndex(uuid);
   }
 
   @Override
@@ -58,7 +66,7 @@ public abstract class AbstractStorage<T> implements Storage {
 
   protected abstract void doClear();
 
-  protected abstract Resume doGet(String uuid);
+  protected abstract Resume doGet(T key);
 
   protected abstract Resume[] doGetAll();
 
@@ -66,7 +74,7 @@ public abstract class AbstractStorage<T> implements Storage {
 
   protected abstract void doSave(Resume r);
 
-  protected abstract T getKey(String uuid);
-
   protected abstract void doUpdate(Resume r, T key);
+
+  protected abstract T getIndex(String uuid);
 }

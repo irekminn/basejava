@@ -44,7 +44,7 @@ public abstract class AbstractStorageTest {
 
   @Test
   public void size() throws Exception {
-    assertSize(3);
+    assertSize(doSize());
   }
 
   @Test
@@ -110,17 +110,29 @@ public abstract class AbstractStorageTest {
     assertEquals(RESUME_3, array[2]);
   }
 
-  protected abstract int doSize();
+  protected int doSize() {
+    return storage.size();
+  }
 
-  protected abstract void doClear();
+  protected void doClear() {
+    storage.clear();
+  }
 
-  protected abstract void doSave(Resume resume);
+  protected void doUpdate(Resume newResume) {
+    storage.update(newResume);
+  }
 
-  protected abstract void doUpdate(Resume newResume);
+  protected void doGet(String dummy) {
+    storage.get(dummy);
+  }
 
-  protected abstract void doGet(String dummy);
+  protected void doSave(Resume r) {
+    storage.save(r);
+  }
 
-  protected abstract void doDelete(String uuid);
+  protected void doDelete(String uuid) {
+    storage.delete(uuid);
+  }
 
   private void assertGet(Resume r) {
     assertEquals(r, storage.get(r.getUuid()));

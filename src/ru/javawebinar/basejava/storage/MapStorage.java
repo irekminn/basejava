@@ -1,13 +1,16 @@
 package ru.javawebinar.basejava.storage;
 
 import java.util.Map;
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public class MapStorage extends AbstractStorage<String> {
+public class MapStorage<Storage extends Map<String, Resume>> extends AbstractStorage<String> {
 
-  protected Map<String, Resume> storage;
+  private final Storage storage;
+
+  public MapStorage(Storage storage) {
+    this.storage = storage;
+  }
+
 
   @Override
   protected int doSize() {
@@ -38,25 +41,18 @@ public class MapStorage extends AbstractStorage<String> {
 
   @Override
   protected void doSave(Resume r) {
-    if (getKey(r.getUuid()) != null) {
-      throw new ExistStorageException(r.getUuid());
-    }
     storage.put(r.getUuid(), r);
   }
 
   @Override
-  protected String getKey(String uuid) {
-    var key = storage.get(uuid);
-    if (key == null) {
-      throw new NotExistStorageException(uuid);
+  protected void doUpdate(Resume r, String uuid) {
+    if (uuid.equals(getKey(uuid))) {
+      storage.put(uuid, r);
     }
-    return uuid;
   }
 
   @Override
-  protected void doUpdate(Resume r, String uuid) {
-    if(uuid.equals(getKey(uuid))) {
-      storage.put(uuid, r);
-    }
+  protected String getIndex(String uuid) {
+    return storage.containsKey(uuid) ? uuid : null;
   }
 }

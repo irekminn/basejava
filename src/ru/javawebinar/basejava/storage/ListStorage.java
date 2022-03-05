@@ -1,12 +1,15 @@
 package ru.javawebinar.basejava.storage;
 
 import java.util.List;
-import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public class ListStorage extends AbstractStorage<Integer> {
+public class ListStorage<Storage extends List<Resume>> extends AbstractStorage<Integer> {
 
-  protected List<Resume> storage;
+  private final Storage storage;
+
+  protected ListStorage(Storage storage) {
+    this.storage = storage;
+  }
 
   @Override
   protected int doSize() {
@@ -19,32 +22,32 @@ public class ListStorage extends AbstractStorage<Integer> {
   }
 
   @Override
-  protected Resume doGet(String uuid) {
-    var key = getKey(uuid);
+  protected Resume doGet(Integer key) {
     return storage.get(key);
   }
 
   @Override
   protected void doDelete(Integer key) {
-    storage.remove(key);
+    storage.remove(storage.get(key));
   }
 
   @Override
   protected void doSave(Resume r) {
-    if (getKey(r.getUuid()) != null) {
-      throw new ExistStorageException(r.getUuid());
-    }
     storage.add(r);
-  }
-
-  @Override
-  protected Integer getKey(String uuid) {
-    return storage.indexOf(uuid);
   }
 
   @Override
   protected void doUpdate(Resume r, Integer key) {
     storage.set(key, r);
+  }
+
+  @Override
+  protected Integer getIndex(String uuid) {
+    var index = storage.indexOf(new Resume(uuid));
+    if (index == -1) {
+      return null;
+    }
+    return index;
   }
 
   @Override
